@@ -1,28 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@model IEnumerable<BeFit.Models.Stat>
+﻿@model IEnumerable<BeFit.Models.Stat>
+
 @{
-    ViewData["Title"] = "Stats";
+    ViewData["Title"] = "Statystyki";
 }
 
-<h2>Stats</h2>
+<h1>Twoje Statystyki (Ostatnie 4 tygodnie)</h1>
 
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>Exercise type</th>
-            <th>Sessions</th>
-            <th>Record<th>
+            <th>Rodzaj ćwiczenia</th>
+            <th>Liczba treningów</th>
+            <th>Łącznie powtórzeń</th>
+            <th>Średnie obciążenie</th>
+            <th>Max obciążenie</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var stat in Model)
+        @foreach (var item in Model)
         {
             <tr>
-                <td>@stat.ExerciseTypeName</td>
-                <td>@stat.SessionsCount</td>
-                <td>@stat.BestResult</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExerciseTypeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SessionsCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalReps)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AvgWeight) kg
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaxWeight) kg
+                </td>
             </tr>
         }
     </tbody>

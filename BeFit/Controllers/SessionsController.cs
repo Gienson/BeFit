@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BeFit.Data;
 using BeFit.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeFit.Controllers
 {
+    [Authorize]
     public class SessionsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,23 +25,27 @@ namespace BeFit.Controllers
         // GET: Sessions
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Session.ToListAsync());
+            // POBIERZ ID AKTUALNEGO UŻYTKOWNIKA
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+   
+            return View(await _context.Session
+                .Where(s => s.UserId == userId)
+                .ToListAsync());
         }
 
         // GET: Sessions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var session = await _context.Session
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (session == null)
-            {
-                return NotFound();
-            }
+
+            if (session == null) return NotFound();
+            if (session.UserId != userId) return Forbid();
 
             return View(session);
         }
@@ -50,14 +57,14 @@ namespace BeFit.Controllers
         }
 
         // POST: Sessions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Start,End")] Session session)
         {
             if (ModelState.IsValid)
             {
+                session.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 _context.Add(session);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -68,30 +75,35 @@ namespace BeFit.Controllers
         // GET: Sessions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var session = await _context.Session.FindAsync(id);
-            if (session == null)
-            {
-                return NotFound();
-            }
+
+            if (session == null) return NotFound();
+
+            if (session.UserId != userId) return Forbid();
+
             return View(session);
         }
 
         // POST: Sessions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Start,End")] Session session)
         {
-            if (id != session.Id)
+            if (id != session.Id) return NotFound();
+
+
+            var existingSession = await _context.Session.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (existingSession == null || existingSession.UserId != userId)
             {
-                return NotFound();
+                return Forbid();
             }
+
+            session.UserId = userId;
 
             if (ModelState.IsValid)
             {
@@ -102,14 +114,8 @@ namespace BeFit.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SessionExists(session.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!SessionExists(session.Id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -119,17 +125,14 @@ namespace BeFit.Controllers
         // GET: Sessions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var session = await _context.Session
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (session == null)
-            {
-                return NotFound();
-            }
+
+            if (session == null) return NotFound();
+            if (session.UserId != userId) return Forbid();
 
             return View(session);
         }
@@ -139,13 +142,17 @@ namespace BeFit.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var session = await _context.Session.FindAsync(id);
+
             if (session != null)
             {
-                _context.Session.Remove(session);
+                if (session.UserId == userId)
+                {
+                    _context.Session.Remove(session);
+                    await _context.SaveChangesAsync();
+                }
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

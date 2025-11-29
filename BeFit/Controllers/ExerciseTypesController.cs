@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BeFit.Data;
 using BeFit.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeFit.Controllers
 {
@@ -19,6 +20,8 @@ namespace BeFit.Controllers
             _context = context;
         }
 
+        // STREFA PUBLICZNA (Dostęp dla każdego)
+
         // GET: ExerciseTypes
         public async Task<IActionResult> Index()
         {
@@ -28,32 +31,28 @@ namespace BeFit.Controllers
         // GET: ExerciseTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseType = await _context.ExerciseType
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (exerciseType == null)
-            {
-                return NotFound();
-            }
+            if (exerciseType == null) return NotFound();
 
             return View(exerciseType);
         }
 
+        // STREFA ADMINA (Wymaga roli "Admin")
+
         // GET: ExerciseTypes/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: ExerciseTypes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Name")] ExerciseType exerciseType)
         {
             if (ModelState.IsValid)
@@ -66,32 +65,23 @@ namespace BeFit.Controllers
         }
 
         // GET: ExerciseTypes/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseType = await _context.ExerciseType.FindAsync(id);
-            if (exerciseType == null)
-            {
-                return NotFound();
-            }
+            if (exerciseType == null) return NotFound();
             return View(exerciseType);
         }
 
         // POST: ExerciseTypes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] ExerciseType exerciseType)
         {
-            if (id != exerciseType.Id)
-            {
-                return NotFound();
-            }
+            if (id != exerciseType.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -102,14 +92,8 @@ namespace BeFit.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ExerciseTypeExists(exerciseType.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ExerciseTypeExists(exerciseType.Id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -117,19 +101,14 @@ namespace BeFit.Controllers
         }
 
         // GET: ExerciseTypes/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseType = await _context.ExerciseType
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (exerciseType == null)
-            {
-                return NotFound();
-            }
+            if (exerciseType == null) return NotFound();
 
             return View(exerciseType);
         }
@@ -137,6 +116,7 @@ namespace BeFit.Controllers
         // POST: ExerciseTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var exerciseType = await _context.ExerciseType.FindAsync(id);
