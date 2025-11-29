@@ -1,0 +1,29 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model IEnumerable<BeFit.Models.Stat>
+@{
+    ViewData["Title"] = "Stats";
+}
+
+<h2>Stats</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Exercise type</th>
+            <th>Sessions</th>
+            <th>Record<th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var stat in Model)
+        {
+            <tr>
+                <td>@stat.ExerciseTypeName</td>
+                <td>@stat.SessionsCount</td>
+                <td>@stat.BestResult</td>
+            </tr>
+        }
+    </tbody>
+</table>
