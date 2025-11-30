@@ -22,7 +22,6 @@ namespace BeFit.Controllers
             _context = context;
         }
 
-        // GET: Exercises
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -35,7 +34,6 @@ namespace BeFit.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Exercises/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -54,7 +52,6 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // GET: Exercises/Create
         public IActionResult Create()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -65,7 +62,6 @@ namespace BeFit.Controllers
             return View();
         }
 
-        // POST: Exercises/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Weight,NumOfSeries,NumOfReps,ExerciseTypeId,SessionId")] Exercise exercise)
@@ -84,7 +80,6 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // GET: Exercises/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -98,12 +93,11 @@ namespace BeFit.Controllers
 
             if (exercise.Session.UserId != userId) return Forbid();
 
-            ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseType, "Id", "Name", exercise.ExerciseTypeId); // Zmieniłem "Id" na "Name" dla czytelności
+            ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseType, "Id", "Name", exercise.ExerciseTypeId);
             ViewData["SessionId"] = new SelectList(_context.Session.Where(s => s.UserId == userId), "Id", "Start", exercise.SessionId);
             return View(exercise);
         }
 
-        // POST: Exercises/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Weight,NumOfSeries,NumOfReps,ExerciseTypeId,SessionId")] Exercise exercise)
@@ -132,7 +126,6 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // GET: Exercises/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -149,7 +142,6 @@ namespace BeFit.Controllers
             return View(exercise);
         }
 
-        // POST: Exercises/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -169,7 +161,6 @@ namespace BeFit.Controllers
             return _context.Exercise.Any(e => e.Id == id);
         }
 
-        // GET: Exercises/Stats
         public async Task<IActionResult> Stats()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

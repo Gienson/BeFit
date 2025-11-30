@@ -21,14 +21,11 @@ namespace BeFit.Controllers
         }
 
         // STREFA PUBLICZNA (Dostęp dla każdego)
-
-        // GET: ExerciseTypes
         public async Task<IActionResult> Index()
         {
             return View(await _context.ExerciseType.ToListAsync());
         }
 
-        // GET: ExerciseTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -40,16 +37,13 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // STREFA ADMINA (Wymaga roli "Admin")
-
-        // GET: ExerciseTypes/Create
+        // STREFA ADMINA
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: ExerciseTypes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -64,7 +58,6 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // GET: ExerciseTypes/Edit/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -75,7 +68,6 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // POST: ExerciseTypes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -100,7 +92,6 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // GET: ExerciseTypes/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -113,7 +104,6 @@ namespace BeFit.Controllers
             return View(exerciseType);
         }
 
-        // POST: ExerciseTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]

@@ -22,10 +22,8 @@ namespace BeFit.Controllers
             _context = context;
         }
 
-        // GET: Sessions
         public async Task<IActionResult> Index()
         {
-            // POBIERZ ID AKTUALNEGO UŻYTKOWNIKA
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
    
@@ -34,7 +32,6 @@ namespace BeFit.Controllers
                 .ToListAsync());
         }
 
-        // GET: Sessions/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -50,13 +47,11 @@ namespace BeFit.Controllers
             return View(session);
         }
 
-        // GET: Sessions/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Sessions/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Start,End")] Session session)
@@ -72,7 +67,6 @@ namespace BeFit.Controllers
             return View(session);
         }
 
-        // GET: Sessions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -87,7 +81,6 @@ namespace BeFit.Controllers
             return View(session);
         }
 
-        // POST: Sessions/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Start,End")] Session session)
@@ -122,7 +115,6 @@ namespace BeFit.Controllers
             return View(session);
         }
 
-        // GET: Sessions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -137,7 +129,6 @@ namespace BeFit.Controllers
             return View(session);
         }
 
-        // POST: Sessions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
